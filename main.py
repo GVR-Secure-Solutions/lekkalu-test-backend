@@ -21,6 +21,15 @@ class LoanTests(unittest.TestCase):
         response = requests.post(URL, auth=(self.username, self.password))
         self.assertEqual(response.status_code, 401)
 
+    def test_get_loan_by_id_without_authorization(self):
+        URL = "http://api.finuncle.com/api/loans/1"
+        response = requests.get(URL)
+        self.assertEqual(response.status_code, 401)
+
+    def test_post_loan_by_id_without_authorization(self):
+        URL = "http://api.finuncle.com/api/loans/1"
+        response = requests.post(URL)
+        self.assertEqual(response.status_code, 401)
 
 if __name__ == "__main__":
     unittest.main()
