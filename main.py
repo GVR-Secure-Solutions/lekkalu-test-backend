@@ -31,5 +31,6 @@ class LoanTests(unittest.TestCase):
         response = requests.post(URL)
         self.assertEqual(response.status_code, 401)
 
+
 if __name__ == "__main__":
     unittest.main()
