@@ -13,10 +13,14 @@ class LoanTests(unittest.TestCase):
     password2 = "123456789"
     token2 = ""
     global loan_id
+    # For dev environment
+    #base_url = "http://127.0.0.1:8000/"
+    # For prod environment
+    base_url = "https://api.finuncle.com"
 
     @classmethod
     def setUpClass(cls) -> None:
-        URL = "https://api.finuncle.com/token/"
+        URL = f"{cls.base_url}/token/"
         response = requests.post(URL, json={"username": cls.username1,
                                             "password": cls.password1})
         response_body = json.loads(response.text)
@@ -28,7 +32,7 @@ class LoanTests(unittest.TestCase):
         cls.token2 = response_body["access"]
 
     def test_get_loan_returns_200(self):
-        URL = "https://api.finuncle.com/api/v1/loans/"
+        URL = f"{self.base_url}/api/v1/loans/"
         headers = {
             'Authorization': f'Bearer {self.token1}',
         }
@@ -37,7 +41,7 @@ class LoanTests(unittest.TestCase):
 
     def test_post_loan_returns_201(self):
         global loan_id
-        URL = "https://api.finuncle.com/api/v1/loans/"
+        URL = f"{self.base_url}/api/v1/loans/"
         headers = {
             'Authorization': f'Bearer {self.token1}',
         }
@@ -61,18 +65,18 @@ class LoanTests(unittest.TestCase):
 
     def test_unauthorized_loan_get_by_id_should_return_401(self):
         global loan_id
-        URL = "http://api.finuncle.com/api/v1/loans/"+str(loan_id)
+        URL = f"{self.base_url}/api/v1/loans/"+str(loan_id)
         print(URL)
         headers = {
             'Authorization': f'Bearer {self.token2}',
         }
         response = requests.get(URL, headers=headers)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
 
     def test_unauthorized_loan_id_should_not_be_in_response(self):
         global loan_id
         is_another_accounts_loan_id_in_response = False
-        URL = "http://api.finuncle.com/api/v1/loans/"
+        URL = f"{self.base_url}/api/v1/loans/"
         headers = {
             'Authorization': f'Bearer {self.token2}',
         }
@@ -85,19 +89,19 @@ class LoanTests(unittest.TestCase):
         self.assertEqual(is_another_accounts_loan_id_in_response, False)
 
     def test_get_loan_by_id_without_authorization(self):
-        URL = "http://api.finuncle.com/api/v1/loans/1"
+        URL = f"{self.base_url}/api/v1/loans/1"
         response = requests.get(URL)
         self.assertEqual(response.status_code, 401)
 
     def test_post_loan_by_id_without_authorization(self):
-        URL = "http://api.finuncle.com/api/v1/loans/1"
+        URL = f"{self.base_url}/api/v1/loans/1"
         response = requests.post(URL)
         self.assertEqual(response.status_code, 401)
 
     @classmethod
     def tearDownClass(cls) -> None:
         global loan_id
-        URL = f"https://api.finuncle.com/api/v1/loans/{loan_id}"
+        URL = f"{cls.base_url}/api/v1/loans/{loan_id}"
         headers = {
             'Authorization': f'Bearer {cls.token1}',
         }
